@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X-GOKU | Mines Predictor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF6B00;
+      --primary-dark: #E55A00;
+      --secondary: #1A1A2E;
+      --secondary-light: #2D2D44;
+      --accent: #00C853;
+      --accent-dark: #00B04A;
+      --danger: #E94560;
+      --danger-dark: #D1334E;
+      --dark: #16213E;
+      --light: #F1F1F1;
+      --text: #FFFFFF;
+      --text-secondary: #A0A0B0;
+      --success: #00C853;
+      --gold: #FFD700;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--secondary), var(--dark));
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background: rgba(26, 26, 46, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 15px 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(to right, var(--primary), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo i {
+      font-size: 32px;
+    }
+    
+    .user-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .user-balance {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 107, 0, 0.5);
+    }
+    
+    .btn-success {
+      background: linear-gradient(to right, var(--accent), var(--accent-dark));
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 200, 83, 0.4);
+    }
+    
+    /* Game Container */
+    .game-container {
+      background: linear-gradient(135deg, var(--secondary-light), var(--dark));
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 30px auto;
+      max-width: 600px;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .game-name {
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    /* Mines Game */
+    .mines-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .mines-controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    select {
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 16px;
+      min-width: 120px;
+    }
+    
+    .mines-game {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .mine-tile {
+      aspect-ratio: 1/1;
+      background: linear-gradient(135deg, #2D4263, #1A1A2E);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .mine-tile:hover {
+      transform: scale(1.05);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .mine-tile.safe {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    }
+    
+    .mine-tile.mine {
+      background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+    }
+    
+    .mines-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .mines-stat {
+      text-align: center;
+    }
+    
+    .mines-stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .mines-stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .mines-game {
+        gap: 8px;
+      }
+      
+      .mines-controls {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+    
+    /* Floating Support Button */
+    .support-circle-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <i class="fas fa-dragon"></i>
+          X-GOKU
+        </div>
+        <div class="user-actions">
+          <div class="user-balance">
+            <i class="fas fa-wallet"></i>
+            ₹ <span id="userBalance">10,000</span>
+          </div>
+          <button class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Deposit
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="game-container">
+      <div class="game-header">
+        <div class="game-name">
+          <i class="fas fa-gem"></i> Mines Predictor
+        </div>
+      </div>
+      
+      <div class="mines-container">
+        <div class="mines-controls">
+          <select id="minesSelect"></select>
+          <button class="btn btn-primary" onclick="generateSafeTiles()">
+            <i class="fas fa-bolt"></i> Predict Safe Tiles
+          </button>
+        </div>
+        
+        <div class="mines-game" id="minesGrid"></div>
+        
+        <div class="mines-stats">
+          <div class="mines-stat">
+            <div class="mines-stat-value" id="safeTilesCount">0</div>
+            <div class="mines-stat-label">Safe Tiles</div>
+          </div>
+          <div class="mines-stat">
+            <div class="mines-stat-value" id="minesCount">0</div>
+            <div class="mines-stat-label">Total Mines</div>
+          </div>
+          <div class="mines-stat">
+            <div class="mines-stat-value" id="successRate">0%</div>
+            <div class="mines-stat-label">Success Rate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Support Button -->
+  <a class="support-circle-btn" href="#" target="_blank">
+    <i class="fas fa-headset"></i>
+  </a>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const select = document.getElementById("minesSelect");
+      
+      // Add options 1-24 for mines selection
+      for (let i = 1; i <= 24; i++) {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = `${i} Mines`;
+        select.appendChild(option);
+      }
+      
+      // Set default value
+      select.value = 5;
+      updateStats();
+    });
+
+    function generateSafeTiles() {
+      const grid = document.getElementById('minesGrid');
+      grid.innerHTML = '';
+      
+      const mines = parseInt(document.getElementById('minesSelect').value);
+      const safeCount = mines <= 4 ? 3 : mines <= 15 ? 2 : 1;
+      const safeTiles = [];
+      const mineTiles = [];
+
+      // Generate random safe tiles
+      while (safeTiles.length < safeCount) {
+        let r = Math.floor(Math.random() * 25);
+        if (!safeTiles.includes(r)) safeTiles.push(r);
+      }
+      
+      // Generate random mine tiles (for visualization)
+      while (mineTiles.length < mines) {
+        let r = Math.floor(Math.random() * 25);
+        if (!safeTiles.includes(r) && !mineTiles.includes(r)) mineTiles.push(r);
+      }
+
+      // Create grid
+      for (let i = 0; i < 25; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'mine-tile';
+        cell.textContent = i + 1;
+        
+        if (safeTiles.includes(i)) {
+          cell.classList.add('safe');
+          cell.innerHTML = '<i class="fas fa-check"></i>';
+        } else if (mineTiles.includes(i)) {
+          cell.classList.add('mine');
+          cell.innerHTML = '<i class="fas fa-bomb"></i>';
+        }
+        
+        grid.appendChild(cell);
+      }
+      
+      updateStats();
+    }
+    
+    function updateStats() {
+      const mines = parseInt(document.getElementById('minesSelect').value);
+      const safeCount = mines <= 4 ? 3 : mines <= 15 ? 2 : 1;
+      const successRate = Math.round((safeCount / (25 - mines)) * 100);
+      
+      document.getElementById('minesCount').textContent = mines;
+      document.getElementById('safeTilesCount').textContent = safeCount;
+      document.getElementById('successRate').textContent = `${successRate}%`;
+    }
+  </script>
+</body>
+</html>
